@@ -1,4 +1,3 @@
-// emit.go
 package core
 
 import (
@@ -7,7 +6,6 @@ import (
 	"os"
 )
 
-// emit.go
 func EmitVerilog(mod *hdl.Module) {
 	f, err := os.Create("out.v")
 	if err != nil {
