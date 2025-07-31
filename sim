@@ -1,0 +1,49 @@
+#! /opt/homebrew/Cellar/icarus-verilog/12.0/bin/vvp
+:ivl_version "12.0 (stable)";
+:ivl_delay_selection "TYPICAL";
+:vpi_time_precision - 12;
+:vpi_module "/opt/homebrew/Cellar/icarus-verilog/12.0/lib/ivl/system.vpi";
+:vpi_module "/opt/homebrew/Cellar/icarus-verilog/12.0/lib/ivl/vhdl_sys.vpi";
+:vpi_module "/opt/homebrew/Cellar/icarus-verilog/12.0/lib/ivl/vhdl_textio.vpi";
+:vpi_module "/opt/homebrew/Cellar/icarus-verilog/12.0/lib/ivl/v2005_math.vpi";
+:vpi_module "/opt/homebrew/Cellar/icarus-verilog/12.0/lib/ivl/va_math.vpi";
+S_0x127e04a80 .scope module, "testbench" "testbench" 2 3;
+ .timescale -9 -12;
+v0x600000bcc360_0 .var "a", 7 0;
+v0x600000bcc3f0_0 .var "b", 7 0;
+v0x600000bcc480_0 .net "sum", 7 0, L_0x6000008cc000;  1 drivers
+S_0x127e04bf0 .scope module, "dut" "Adder" 2 10, 3 1 0, S_0x127e04a80;
+ .timescale 0 0;
+    .port_info 0 /INPUT 8 "a";
+    .port_info 1 /INPUT 8 "b";
+    .port_info 2 /OUTPUT 8 "sum";
+v0x600000bcc1b0_0 .net "a", 7 0, v0x600000bcc360_0;  1 drivers
+v0x600000bcc240_0 .net "b", 7 0, v0x600000bcc3f0_0;  1 drivers
+v0x600000bcc2d0_0 .net "sum", 7 0, L_0x6000008cc000;  alias, 1 drivers
+L_0x6000008cc000 .arith/sum 8, v0x600000bcc360_0, v0x600000bcc3f0_0;
+    .scope S_0x127e04a80;
+T_0 ;
+    %vpi_call 2 18 "$dumpfile", "dump.vcd" {0 0 0};
+    %vpi_call 2 19 "$dumpvars", 32'sb00000000000000000000000000000000, S_0x127e04a80 {0 0 0};
+    %vpi_call 2 21 "$display", "a\011b\011sum" {0 0 0};
+    %pushi/vec4 10, 0, 8;
+    %store/vec4 v0x600000bcc360_0, 0, 8;
+    %pushi/vec4 20, 0, 8;
+    %store/vec4 v0x600000bcc3f0_0, 0, 8;
+    %delay 10000, 0;
+    %vpi_call 2 24 "$display", "%d\011%d\011%d", v0x600000bcc360_0, v0x600000bcc3f0_0, v0x600000bcc480_0 {0 0 0};
+    %pushi/vec4 100, 0, 8;
+    %store/vec4 v0x600000bcc360_0, 0, 8;
+    %pushi/vec4 27, 0, 8;
+    %store/vec4 v0x600000bcc3f0_0, 0, 8;
+    %delay 10000, 0;
+    %vpi_call 2 27 "$display", "%d\011%d\011%d", v0x600000bcc360_0, v0x600000bcc3f0_0, v0x600000bcc480_0 {0 0 0};
+    %vpi_call 2 29 "$finish" {0 0 0};
+    %end;
+    .thread T_0;
+# The file index is used to find the file name in the following table.
+:file_names 4;
+    "N/A";
+    "<interactive>";
+    "testbench.v";
+    "out.v";
