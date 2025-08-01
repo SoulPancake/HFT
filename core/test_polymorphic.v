@@ -1,0 +1,4 @@
+module PolymorphicTest(
+);
+
+endmodule

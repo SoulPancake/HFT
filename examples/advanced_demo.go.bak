@@ -1,0 +1,131 @@
+package main
+
+import (
+	"github.com/SoulPancake/HFT/core"
+	"github.com/SoulPancake/HFT/types"
+)
+
+func createALU() *hdl.Module {
+	m := core.NewModule("ALU")
+	
+	// Inputs
+	a := m.Input("a", 8)
+	b := m.Input("b", 8)
+	op := m.Input("op", 3)
+	clk := m.Input("clk", 1)
+	rst := m.Input("rst", 1)
+	
+	// Outputs
+	result := m.Output("result", 8)
+	zero := m.Output("zero", 1)
+	
+	// Internal wires
+	add_result := m.Wire("add_result", 8)
+	sub_result := m.Wire("sub_result", 8)
+	and_result := m.Wire("and_result", 8)
+	or_result := m.Wire("or_result", 8)
+	xor_result := m.Wire("xor_result", 8)
+	shl_result := m.Wire("shl_result", 8)
+	
+	// Registers
+	reg_result := m.Reg("reg_result", 8)
+	
+	m.SetClock(clk)
+	m.SetReset(rst)
+	
+	// Compute operations
+	m.Assign(add_result.Name, a.Add(b))
+	m.Assign(sub_result.Name, a.Sub(b))
+	m.Assign(and_result.Name, a.And(b))
+	m.Assign(or_result.Name, a.Or(b))
+	m.Assign(xor_result.Name, a.Xor(b))
+	m.Assign(shl_result.Name, a.Shl(1))
+	
+	// Multiplexer to select operation result
+	mux_inputs := []*hdl.Signal{add_result, sub_result, and_result, or_result, xor_result, shl_result}
+	mux_result := hdl.Mux(op, mux_inputs...)
+	
+	// Register the result
+	m.Assign(result.Name, reg_result.Name)
+	m.Assign(zero.Name, reg_result.Eq(&hdl.Signal{Name: "8'b0", Width: 8}))
+	
+	// Clock logic would be handled by When blocks when implemented
+	// For now, just assign the mux result
+	m.Assign(reg_result.Name, mux_result)
+	
+	return m
+}
+
+func createCounter() *hdl.Module {
+	m := core.NewModule("Counter")
+	
+	// Inputs
+	clk := m.Input("clk", 1)
+	rst := m.Input("rst", 1)
+	enable := m.Input("enable", 1)
+	
+	// Outputs
+	count := m.Output("count", 8)
+	overflow := m.Output("overflow", 1)
+	
+	// Internal registers
+	counter_reg := m.Reg("counter_reg", 8)
+	
+	m.SetClock(clk)
+	m.SetReset(rst)
+	
+	// Output assignments
+	m.Assign(count.Name, counter_reg.Name)
+	m.Assign(overflow.Name, counter_reg.Eq(&hdl.Signal{Name: "8'hFF", Width: 8}))
+	
+	// Increment logic (simplified) - using enable signal
+	next_count := m.Wire("next_count", 8)
+	enable_mux := hdl.Mux(enable, counter_reg, &hdl.Signal{Name: counter_reg.Add(&hdl.Signal{Name: "8'b1", Width: 8}), Width: 8})
+	m.Assign(next_count.Name, enable_mux)
+	
+	return m
+}
+
+func createBitManipulator() *hdl.Module {
+	m := core.NewModule("BitManipulator")
+	
+	// Inputs
+	data_in := m.Input("data_in", 16)
+	
+	// Outputs
+	upper_byte := m.Output("upper_byte", 8)
+	lower_byte := m.Output("lower_byte", 8)
+	concatenated := m.Output("concatenated", 16)
+	shifted_left := m.Output("shifted_left", 16)
+	shifted_right := m.Output("shifted_right", 16)
+	inverted := m.Output("inverted", 16)
+	
+	// Bit manipulation operations
+	m.Assign(upper_byte.Name, data_in.Bits(15, 8))
+	m.Assign(lower_byte.Name, data_in.Bits(7, 0))
+	
+	// Create signals for demonstration
+	upper_sig := &hdl.Signal{Name: upper_byte.Name, Width: 8}
+	lower_sig := &hdl.Signal{Name: lower_byte.Name, Width: 8}
+	
+	m.Assign(concatenated.Name, hdl.Cat(upper_sig, lower_sig))
+	m.Assign(shifted_left.Name, data_in.Shl(2))
+	m.Assign(shifted_right.Name, data_in.Shr(2))
+	m.Assign(inverted.Name, data_in.Not())
+	
+	return m
+}
+
+func main() {
+	// Generate ALU
+	alu := createALU()
+	core.EmitVerilog(alu)
+	
+	// Generate Counter
+	counter := createCounter()
+	core.EmitVerilog(counter)
+	
+	// Generate Bit Manipulator
+	bitManip := createBitManipulator()
+	core.EmitVerilog(bitManip)
+}
