@@ -118,7 +118,7 @@ waves:
 # Clean generated files
 clean:
 	@echo "Cleaning generated files..."
-	rm -f *.v
+	rm -f out.v advanced_demo.v
 	rm -f *.vcd
 	rm -f sim_out sim
 	rm -f core/test_*.v
