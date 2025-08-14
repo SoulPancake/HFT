@@ -1,1 +1,15 @@
 .idea
+
+# Generated Verilog files (except examples)
+*.v
+!testbench.v
+!examples/*.v
+
+# Simulation files
+*.vcd
+sim_out
+sim
+
+# Build artifacts
+*.o
+*.a
